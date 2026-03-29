@@ -1,6 +1,6 @@
-package org.produtos.service.impl;
+package api.produtos.service.impl;
 
-import org.produtos.service.ProdutoService;
+import api.produtos.service.ProdutoService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

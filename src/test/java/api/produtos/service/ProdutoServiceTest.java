@@ -1,4 +1,4 @@
-package org.produtos.service;
+package api.produtos.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

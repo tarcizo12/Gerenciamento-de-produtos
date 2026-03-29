@@ -1,4 +1,4 @@
-package org.produtos.service;
+package api.produtos.service;
 
 import java.util.List;
 
