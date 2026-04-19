@@ -47,6 +47,14 @@ spec:
             limits:
               memory: "1Gi"      # 1 Gigabyte (era 128Mi - 8x maior)
               cpu: "500m"        # 500 milicores (era 250m)
+          # Liveness Probe — reinicia o container se /health falhar
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
           # Readiness Probe — só envia tráfego quando /ready responder OK
           readinessProbe:
             httpGet:
