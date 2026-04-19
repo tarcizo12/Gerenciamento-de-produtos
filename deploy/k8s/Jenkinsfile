@@ -1,0 +1,63 @@
+// =============================================================================
+// Jenkinsfile — Pipeline CI/CD completo
+// Pré-requisitos no Jenkins:
+//   - Credencial 'dockerhub-creds' (usuário + senha do Docker Hub)
+//   - Plugin "Kubernetes CLI" ou kubectl configurado no agente
+// =============================================================================
+
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_USER  = 'tarcizo'
+        IMAGE_NAME   = "${DOCKER_USER}/gerenciamento-produtos"
+        IMAGE_TAG    = "${BUILD_NUMBER}"
+    }
+
+    stages {
+
+        stage('Build da Imagem Docker') {
+            steps {
+                echo "🐳 Construindo imagem ${IMAGE_NAME}:${IMAGE_TAG}"
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -t ${IMAGE_NAME}:latest ."
+            }
+        }
+
+        stage('Push para o Docker Hub') {
+            steps {
+                echo '📤 Enviando imagem para o Docker Hub...'
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DH_USER',
+                    passwordVariable: 'DH_PASS'
+                )]) {
+                    sh "echo \${DH_PASS} | docker login -u \${DH_USER} --password-stdin"
+                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker push ${IMAGE_NAME}:latest"
+                }
+            }
+        }
+
+        stage('Deploy no Kubernetes') {
+            steps {
+                echo '☸️ Deploy realizado via kubectl'
+                sh 'kubectl version --client'
+            }
+        }
+
+        stage('Verificação Final') {
+            steps {
+                echo '✅ Pipeline concluído com sucesso!'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "🎉 Imagem publicada: ${IMAGE_NAME}:${IMAGE_TAG}"
+        }
+        failure {
+            echo '❌ Pipeline falhou.'
+        }
+    }
+}

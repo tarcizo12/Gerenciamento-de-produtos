@@ -11,3 +11,16 @@ spring:
       ddl-auto: update
     show-sql: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,metrics
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: always
+
+server:
+  port: 8080
